@@ -28,11 +28,13 @@ export  default {
             console.log('Executor :: I am in storeOrder func');
             return new Promise((resolve , reject) => {
                 api('post', 'api/v1/admin/orders', payload.formData).then(res => {
-                    if (res.success){
+                    if (res){
+
+                        console.log("Hello",res)
                         localStorage.removeItem('myCart');
-                        dispatch('getFromCartStore', payload.seller_id)
-                        dispatch('getAllOrder', payload.seller_id)
-                        resolve({ success: true, message: res.message });
+                        dispatch('getFromCartStore', payload)
+                        dispatch('getAllOrder', payload)
+                        resolve({ success: true, message: res });
                     }
                     else {
                         console.log(res.message)

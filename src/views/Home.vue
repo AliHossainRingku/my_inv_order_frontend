@@ -12,88 +12,25 @@
 			</div>
 			<div  class="select-box  flex-column d-flex align-center justify-center">
 
-				<template v-if="sellers.length > 0">
-					<div class="d-flex align-center justify-center mb-5">
-						<h3 class="mb-0">Select Seller Account</h3>
-					</div>
-					<div class="d-flex align-center justify-center">
-						<v-select
-							class="mr-2"
-							:items="sellers"
-							v-model="id"
-							filled
-							item-text="name"
-							item-value="id"
-							outlined
-							dense
-							placeholder="Select Seller"
-						></v-select>
 
-						<v-btn
-							style="padding: 20px 10px !important; color: #fff;"
-							class="mb-7"
-							depressed
-							color="green"
-							@click="goToSeller"
-						>
-						Enter Store
-						</v-btn>
-					</div>
-				</template>
 
-				<template v-else>
-					<v-progress-linear
-						v-if="$store.state.seller.sellerloader"
-						style="width: 500px;"
-						indeterminate
-						color="teal"
-					></v-progress-linear>
+				<template>
 					<div
 						style="border: 2px dashed gray"
-						v-else
+						
 						class="p-10 mb-10" 
 					>
 						<v-btn
 							text
-							@click="dialog = true"
+							@click="goToSeller"
 						>
-							create your first seller account
+							go to your account
 						</v-btn>
 					</div>
 				</template>
 				
 			</div>
 
-		<!-- create dialog -->
-		<v-dialog 
-			v-model="dialog"
-			width="500"
-		>
-		<v-card>
-			<v-card-title 
-			class="headline ml-n3" 
-			style="background: #f2f2f2"
-			>
-			Add Seller
-			</v-card-title>
-
-			<CreateForm
-				ref="createForm"
-				@onCreate="storeSeller"
-			>
-				<template v-slot:closeBtn>
-					<v-btn 
-						color="gray darken-1" 
-						text
-						@click="closeCrateDialog"
-					>
-					Close
-					</v-btn>
-				</template>
-			</CreateForm>
-		</v-card>
-		</v-dialog>
-		<!-- create dialog -->
 
 		<v-snackbar 
 			v-model="snackbar" 
@@ -117,12 +54,11 @@
 </template>
 <script>
 import { mapActions, mapMutations } from "vuex";
-import CreateForm from "@/components/molecule/seller/Create";
 
 export default {
 	name: 'Home',
 	components: {
-		CreateForm
+		
 	},
 
 	data() {
@@ -134,14 +70,12 @@ export default {
 		}
 	},
 	computed: {
-		sellers() {
-			return this.$store.state.seller.sellers;
-		},
+		
 	},
 
 	methods: {
 		...mapActions([
-			'allSeller',
+			'user',
 			'createSeller',
 		]),
 		...mapMutations([
@@ -149,10 +83,10 @@ export default {
 		]),
 
 		goToSeller() {
-			let seller = this.sellers.filter(i => i.id == this.id)
-			localStorage.setItem('seller_info', JSON.stringify(seller[0]));
-			this.setSellerInfo();
-			this.$router.push(`/sellers/${this.id}`);
+			//let seller = this.sellers.filter(i => i.id == this.id)
+			//localStorage.setItem('seller_info', JSON.stringify(seller[0]));
+			//this.setSellerInfo();
+			this.$router.push('/user');
 		},
 
 		closeCrateDialog() {
@@ -161,19 +95,6 @@ export default {
 			this.$refs.createForm.emptyForm();
 		},
 
-		async storeSeller(data){
-			let res = await this.createSeller(data);
-			if (res.success) {
-				this.snackbar = true;
-				this.text = res.message;
-				this.closeCrateDialog();
-				this.$refs.createForm.loadingHandle(false);
-			} else {
-				this.snackbar = true;
-				this.text = res.message;
-				this.$refs.createForm.loadingHandle(false);
-			}
-		},
 
 		logout(){
 			localStorage.removeItem('im_token');
@@ -184,7 +105,7 @@ export default {
 	},
 
 	mounted() {
-		this.allSeller();
+		this.user();
     console.log(localStorage.getItem('im_token'))
 
 	},

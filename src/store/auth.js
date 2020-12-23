@@ -3,11 +3,11 @@ import api from './api.js'
 export default {
 	state: {
 		nothing:'',
-		users:[],
+		user:[],
 	},
 	mutations: {
 		setUser(state, data) {
-			state.users = data;
+			state.user = data;
 		},
 		setUserToLocalStorage(state, data){
 			state.nothing = '';
@@ -27,8 +27,8 @@ export default {
 					api('post', 'api/login', payload).then(res => {
 						console.log(res)
 						if(res.success){
-							commit('setUserToLocalStorage', res.data);
-							console.log('res')
+							commit('setUserToLocalStorage', res);
+							//console.log('res')
 							resolve({
 								success: true,
 								message: res.message
@@ -49,7 +49,7 @@ export default {
 
 			async register ( {commit}, data) {
 			return new Promise ((resolve, reject) => {
-				api('post', `api/v1/auth/register`, data).then(res => {
+				api('post', `api/register`, data).then(res => {
 					if(res.success) {
 						commit('setCagegoryLoader', false)
 						resolve({success: true, message: 'Registration Done. Now login '});
@@ -62,8 +62,8 @@ export default {
 			})
 		},
 
-		async allUser({ commit }) {
-			let response = await api('get', `api/v1/admin/users`);
+		async user({ commit }) {
+			let response = await api('get', `api/user`);
 			if (response.success) {
 				commit('setUser', response.data)
 			}

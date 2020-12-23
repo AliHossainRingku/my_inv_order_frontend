@@ -4,7 +4,7 @@
       <v-list-item 
         v-for="item in items" 
         :key="item.title" 
-        :to="`/seller/${sellerId}${item.link}`" 
+        :to="`${item.link}`" 
         link
       >
         <v-list-item-icon>
@@ -19,7 +19,7 @@
      
 
       <v-list-item 
-        :to="`/sellers/${sellerId}`" 
+        :to="``" 
         link
       >
         <v-list-item-icon>

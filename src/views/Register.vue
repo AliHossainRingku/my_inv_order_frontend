@@ -19,15 +19,6 @@
                 placeholder="Name"
                 required
               ></v-text-field>
-              <label for="">Phone No</label>
-              <v-text-field
-                v-model="form.phone"
-                :rules="phoneRules"
-                dense
-                outlined
-                placeholder="Phone Number"
-                required
-              ></v-text-field>
               <label for="">Email</label>
               <v-text-field
                 v-model="form.email"
@@ -49,7 +40,7 @@
               ></v-text-field>
               <label for="">Confirm Password</label>
               <v-text-field
-                v-model="confirmPassword"
+                v-model="form.password_confirmation"
                 :rules="confirmPasswordRules.concat(passwordConfirmationRule)"
                 dense
                 type="password"
@@ -57,12 +48,6 @@
                 placeholder="Re enter password"
                 required
               ></v-text-field>
-              <!-- <v-text-field
-                v-model="confirmPassword"
-                :rules="[confirmPasswordRules, passwordConfirmationRule]"
-                type="password"
-                required
-              ></v-text-field> -->
             </v-col>
           </v-row>
         </v-form>
@@ -119,12 +104,9 @@ export default {
     form: {
       name: '',
       email: '',
-      phone: '',
       password: '',
-      status: 1
+      password_confirmation: ''
     },
-    confirmPassword: '',
-    phoneRules: [(v) => !!v || "Phone No is required."],
     passwordRules: [(v) => !!v || "Password is required."],
     confirmPasswordRules: [(v) => !!v || "Confirm Password is required."],
     nameRules: [
@@ -138,7 +120,7 @@ export default {
   }),
   computed: {
     passwordConfirmationRule() {
-      if (this.form.password === this.confirmPassword) {
+      if (this.form.password === this.form.password_confirmation) {
         return true;
       } else {
         return "Password must match";

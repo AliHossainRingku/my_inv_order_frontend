@@ -109,13 +109,13 @@
 import { mapActions } from "vuex";
 import CreateForm from "@/components/molecule/order/Create";
 import EditForm from "@/components/molecule/order/Edit";
-import Table from "@/components/molecule/order/Table";
+//import Table from "@/components/molecule/order/Table";
 
 export default {
   name: 'OrderPage',
   components: {
     CreateForm,
-    Table,
+    //Table,
     EditForm
   },
   props: {},

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="pa-5 d-flex justify-space-between">
-      <h3>Products (Seller: {{ seller.name }})</h3>
+      <h3>Products</h3>
       <v-btn 
       text 
       outlined 
@@ -11,19 +11,12 @@
         Create
       </v-btn>
     </div>
-
-    <FilterProduct
-      :products="products"
-      @resetFilter="resetFilter"
-      @getFilteredProduct="getFilteredProduct"
-    />
     
     <div class="pa-5 mt-n10">
       <Table 
         :products="products" 
         @onDeleteItem="onDeleteItem"
         @onEdit="onEdit"
-        @onStock="onStock"
        />
     </div>
     <v-dialog v-model="dialog" width="700">
@@ -34,10 +27,6 @@
 
         <CreateForm 
         ref="createForm"
-        :categories="categories"
-        :brands="brands"
-        :stores="stores"
-        @changeCategory="changeCategoryGetBrand"
         @onCreate="storeProduct"
         >
           <template v-slot:closeBtn>
@@ -64,10 +53,6 @@
         <EditForm
           ref="editForm"
           :item="editItem"
-          :categories="categories"
-          :brands="brands"
-          :itemCategoryName="editItemCatName"
-          @changeCategory="changeCategoryGetBrand"
           @onUpdate="onUpdate"
         >
           <template v-slot:closeBtn>
@@ -88,31 +73,7 @@
       v-model="stockDialog"
       width="450"
     >
-      <v-card>
-        <v-card-title 
-          class="headline ml-n3" 
-          style="background: #f2f2f2"
-        >
-          Stock Product
-        </v-card-title>
-
-        <StockForm
-          ref="stockForm"
-          :productIdStock="productIdStock"
-          :stores="stores"
-          @onSaveStock="onSaveStock"
-        >
-          <template v-slot:closeBtn>
-            <v-btn 
-              color="gray darken-1" 
-              text
-              @click="closeStockDialog"
-            >
-              Close
-            </v-btn>
-          </template>
-        </StockForm>
-      </v-card>
+      
     </v-dialog>
     <!-- Stock product dialog -->
      <!-- Delete Dialog -->
@@ -128,7 +89,7 @@
             <v-card-title class="headline red--text ">
               Are You Sure To Delete?
             </v-card-title>
-            <v-card-text >If delete, all related data will be eraged.</v-card-text>
+            <v-card-text >If delete, all related data will be erased.</v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn
@@ -191,8 +152,6 @@ import { mapActions } from "vuex";
 import CreateForm from "@/components/molecule/product/Create";
 import EditForm from "@/components/molecule/product/Edit";
 import Table from "@/components/molecule/product/Table";
-import StockForm from "@/components/molecule/product/Stock";
-import FilterProduct from '../../components/molecule/product/Filter.vue';
 
 export default {
   name: "ProductPage",
@@ -200,8 +159,6 @@ export default {
     CreateForm,
     Table,
     EditForm,
-    StockForm,
-    FilterProduct,
   },
   props: {},
   data() {
@@ -210,13 +167,11 @@ export default {
       editItem: '',
       deleteId: '',
       deleteDialog:false,
-      editItemCatName: '',
       text: "",
       snackbar: false,
       dialog: false,
       editDialog:false,
       stockDialog:false,
-      categoryBrands:{},
       snackbarColor:"",
       snackbarIcon:"",
       snackbarButtonColor:"",
@@ -232,15 +187,6 @@ export default {
     sellerId() {
      return this.$route.params.id;
     },
-    categories() {
-      return this.$store.state.category.categories;
-    },
-    brands() {
-      return this.$store.state.brand.categoryDebendentBrands;
-    },
-    stores() {
-      return this.$store.state.store.stores;
-    },
     products() {
       return this.$store.state.product.products;
     },
@@ -250,34 +196,22 @@ export default {
     seller() {
       return this.$store.state.seller.seller;
     },
-    categoriesWithParent() {
-      return this.$store.state.category.categoriesWithParent;
-    },
   },
   watch: {},
   methods: {
     ...mapActions([
       "singleSeller",
       "createProduct",
-      "allCategory",
-      "categoryDependentBrand",
-      "allCategoriesWithParent", 
-      "allShop",
       "deleteProduct",
       "updateProduct",
-      "allStore",
-      "allProducts",
-      "filterPoduct",
-      "stockProduct",
+      "allProducts"
     ]),
     closeDialog() {
       this.dialog = false;
       this.$refs.createForm.resetValidation();
       this.$refs.createForm.emptyForm();
     },
-    async changeCategoryGetBrand(data) {
-        await this.categoryDependentBrand(data);
-     },
+
     async storeProduct(data) {
       let res = await this.createProduct(data);
       if (res.success) {
@@ -289,18 +223,6 @@ export default {
         this.snackBarConfig(false);
         this.text = res.message;
         this.$refs.createForm.loadingHandle(false);
-      }
-    },
-
-    async onSaveStock(data) {
-      let res = await this.stockProduct(data);
-      if (res.success) {
-        this.snackBarConfig(true);
-        this.text = res.message;
-        this.closeStockDialog();
-      } else {
-        this.snackBarConfig(false);
-        this.text = res.message;
       }
     },
     
@@ -347,21 +269,8 @@ export default {
         this.editItemCatName = this.categoriesWithParent.filter(i => i.id == item.category.id)[0]?this.categoriesWithParent.filter(i => i.id == item.category.id)[0].name: '';
         this.categoryDependentBrand(data);
       },
-      onStock(productId){
-        this.productIdStock = '' ;
-        this.productIdStock = productId ;
-        this.stockDialog = true;
-     
-      },
-      getFilteredProduct(queryString){
-        // console.log(queryString,'Filter');
-        this.filterPoduct(queryString);
 
-      },
-      
-      resetFilter(){
-        this.allProducts(this.sellerId);
-      },
+
       onDeleteItem(id){
         this.deleteId = id ;
         this.deleteDialog = true;
@@ -390,9 +299,6 @@ export default {
   },
    mounted() {
     this.allProducts(this.sellerId);
-    this.allCategory(this.sellerId);
-    this.allStore(this.sellerId);
-    this.allCategoriesWithParent(this.sellerId);
     //this.singleSeller(this.sellerId);
   },
 };

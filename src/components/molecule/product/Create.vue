@@ -3,10 +3,10 @@
     <v-form v-model="valid" ref="form">
 
       <v-row class="mt-n4">
-        <v-col cols="6">
+        <v-col cols="12">
           <label for="">Product Name <span class="red--text">*</span></label>
           <v-text-field
-            v-model="product.name"
+            v-model="product.product_name"
             :rules="rules.nameRules"
             dense
             outlined
@@ -14,51 +14,13 @@
             required
           ></v-text-field
         ></v-col>
-        <v-col cols="6">
-          <label for="">Category <span class="red--text">*</span></label>
-          <v-select
-            v-model="product.category_id"
-            :items="categories"
-            item-text="name"
-            item-value="id"
-            :rules="rules.categoryRules"
-            @change="changeCategory"
-            dense
-            outlined
-            placeholder="Select Category"
-            required
-          >
-          </v-select>
-        </v-col>
       </v-row>
-
-      <div v-for="(item,index) in subCategoryArray" :key="index">  
-        <SubCategory
-          :SubCategories="item"
-          :index="index"
-          @changeSubCategory="changeSubCategory"
-        />
-      </div>
       <v-row class="mt-n9">
-        <v-col cols="6">
-          <label for="">Brand <span class="red--text">*</span></label>
-          <v-select
-            v-model="product.brand_id" value="5"
-            :items="brands"
-            item-text="name"
-            item-value="id"
-            :rules="rules.brandRules"
-            dense
-            outlined
-            placeholder="Select Brand"
-            required
-          >
-          </v-select>
-        </v-col>
+
         <v-col cols="6">
           <label for="">Price <span class="red--text">*</span></label>
           <v-text-field
-           v-model="product.price"
+           v-model="product.product_price"
             :rules="rules.priceRules"
             dense
             outlined
@@ -66,24 +28,22 @@
             required
           ></v-text-field>
         </v-col>
-      </v-row>
 
-      <v-row class="mt-n9">
         <v-col cols="6">
-          <label for="">Vat (%  )</label>
+          <label for="">Quantity <span class="red--text">*</span></label>
           <v-text-field
-            v-model="product.vat"
-            :rules="rules.vatRules"
+          v-model="product.quantity"
             dense
             outlined
-            placeholder="vat"
+            placeholder="Quantity"
             required
-          ></v-text-field
-        ></v-col>
-        <v-col cols="6">
-          <label for="">Details </label>
+          ></v-text-field>
+        </v-col>
+
+        <v-col cols="12">
+          <label for="">Description </label>
           <v-textarea
-          v-model="product.details"
+          v-model="product.product_description"
             dense
             outlined
             name="input-7-4"
@@ -93,10 +53,11 @@
         ></v-col>
       </v-row>
 
-      <v-row class="mt-n9">
-        <v-col cols="6"
+      <v-row class="mt-n3">
+        <v-col cols="12"
           ><label for="">Product Image</label>
           <v-file-input
+          v-model="product.product_image"
             accept="image/png, image/jpeg, image/bmp"
             dense
             outlined
@@ -105,97 +66,33 @@
             @change="onImageChange"
           ></v-file-input
         ></v-col>
-        <v-col cols="6"
-          ><label for="">Thumbnail Image</label>
-          <v-file-input
-            accept="image/png, image/jpeg, image/bmp"
-            dense
-            outlined
-            placeholder="Upload A Thumbnail Image"
-            prepend-icon=""
-            @change="onThumbnailChange"
-          ></v-file-input
-        ></v-col>
       </v-row>
 
-      <h4 style="color: #009900" class="mt-n4">Stock Product (Optional)</h4>
-
-      <div style="border-bottom: 2px solid #009900" class="my-2"></div>
-      <v-row class="mt-n2">
-        <v-col cols="6">
-          <label for="">Store </label>
-          <v-select
-          v-model="product.store_id"
-            :items="stores"
-            item-text="name"
-            item-value="id"
-            dense
-            outlined
-            placeholder="Select Store"
-            required
-          >
-          </v-select
-        ></v-col>
-        <v-col cols="6">
-          <label for="">Quantity </label>
-          <v-text-field
-          v-model="product.quantity"
-            dense
-            outlined
-            placeholder="Quantity"
-            required
-          ></v-text-field>
-        </v-col>
-      </v-row>
+      
     </v-form>
 
     <v-card-actions class="mt-n3">
       <h5 class="red--text">* Marked fields are required.</h5>
       <v-spacer></v-spacer>
-      <v-btn color="green darken-1" text :loading="loading"  @click="onClickCreate"> Create </v-btn>
+      <v-btn color="green darken-1"   @click="onClickCreate"> Create </v-btn>
       <slot name="closeBtn"></slot>
     </v-card-actions>
   </div>
 </template>
 
 <script>
-import { mapActions } from "vuex";
 import { rules } from "@/data/rules.js";
-import SubCategory from "@/components/molecule/product/SubCategory";
 export default {
   name: "CreateProduct",
 
-  components: {
-    SubCategory
-  },
-
-  props: {
-    categories: {
-      required: true
-    },
-    brands: {
-      required: true
-    },
-    stores: {
-      required: false
-    },
-  },
-
   data() {
     return {
-      selected_category_id :'',
-      subCategoryArray:[],
        loading: false,
         product: {
-          name: '',
-          category_id :'',
-          brand_id: '',
-          price: '',
-          vat: '',
-          details: '',
-          thumbnail: '',
-          images: '',
-          store_id: '',
+          product_name: '',
+          product_price: '',
+          product_image: '',
+          product_description: '',
           quantity: '',
         },
         valid: false,
@@ -208,18 +105,13 @@ export default {
     },
     sellerId() {
       return this.$route.params.id;
-    },
-    SubCategories(){
-       return this.$store.state.category.subCategory;
     }
   },
 
   watch: {},
-
+  
   methods: {
-    ...mapActions([
-      "getSubCategory",
-    ]),
+  
     
     // Form submission
     onClickCreate() {
@@ -227,93 +119,45 @@ export default {
       if (this.$refs.form.validate()) {
         var formData = new FormData();
    
-        formData.append('name',  this.product.name);
-        formData.append('category_id',  this.selected_category_id);
-        formData.append('brand_id',  this.product.brand_id);
-        formData.append('price',  this.product.price);
-        formData.append('vat',  this.product.vat);
-        formData.append('details',  this.product.details);
-        formData.append('thumbnail',  this.product.thumbnail);
-        formData.append('images',  this.product.images);
-        formData.append('store_id',  this.product.store_id);
+        formData.append('product_name',  this.product.product_name);
+        formData.append('product_price',  this.product.product_price);
+        formData.append('product_image',  this.product.product_image);
+        formData.append('product_description',  this.product.product_description);
         formData.append('quantity',  this.product.quantity);
-        formData.append(`seller_ids[0]`, this.sellerId);
         let data = {
-          sellerId: this.sellerId,
           formData: formData
         }
-        this.$emit('onCreate', data);
-        this.loadingHandle(true);
+
+        console.log(data)
+        this.$emit('onCreate', data)
+        this.loadingHandle(true)
+        
       }
     },
 
-    // getting subcategory while changing the category
-    async changeCategory() {
-      let data = {
-        sellerId: this.sellerId,
-        categoryId: this.product.category_id,
-      }
-      this.$emit('changeCategory', data);
-      this.loadingHandle(true);
-      let res =  await this.getSubCategory(data);
-      this.count = 0;
-      this.subCategoryArray=[];
-      let catInfo =  this.SubCategories
-      if (res.success) {
-        this.subCategoryArray.push(catInfo)
-      }
-      this.selected_category_id = data.categoryId;
-      this.loading = false
-    },
-
-    // getting subcategory while changing a subcategroy
-    async changeSubCategory(data) {
-      this.subCategoryArray.splice(data.index+1);
-      let res =  await this.getSubCategory(data);
-      let catInfo = this.SubCategories
-      this.$emit('changeCategory', data);
-      if (res.success) {
-        this.subCategoryArray.push(catInfo);
-      }
-      this.selected_category_id = data.categoryId;
-      this.loading = false
-    },
 
     resetValidation() {
       this.$refs.form.resetValidation();
     },
      
     emptyForm(){
-       this.product.name = 
-        this.product.category_id =  
-        this.product.brand_id =  
-        this.product.price = 
-        this.product.vat =  
-        this.product.details =  
-        this.product.thumbnail =  
-        this.product.images =  
-        this.product.store_id = 
-        this.product.quantity =  
-        this.selected_category_id = '';
+       this.product.product_name =  
+        this.product.product_price =  
+        this.product.product_image =
+        this.product.product_description =
+        this.product.quantity = '';
     },
 
     loadingHandle(value) {
       this.loading = value
     },
 
-    onThumbnailChange(e) {
-      if (e == undefined) {
-        this.product.thumbnail = '';
-        return;
-      }
-    },
-
     onImageChange(e) {
       if(e == undefined){
-        this.product.mages = '';
+        this.product.product_image = '';
         return;
       }
-      this.product.mages = e;
+      this.product.product_image = e;
     }
   },
   

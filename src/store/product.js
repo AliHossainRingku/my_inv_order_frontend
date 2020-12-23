@@ -18,32 +18,25 @@ export default {
     },
     actions: {
 
-        async allProducts({ commit }, sellerId) {
+        async allProducts({ commit }) {
             commit('setFetchingState', true)
-            let response = await api('get', `api/v1/admin/products?seller_id=${sellerId}`);
+            let response = await api('get', `api/products`);
+            
             commit('setFetchingState', false)
-            if (response.success) {
-                commit('setproducts', response.data.data)
+            if (response) {
+                commit('setproducts', response.data)
             }
         },
-        async filterPoduct({ commit }, queryString) {
-            commit('setFetchingState', true)
-            let response = await api('get', `api/v1/admin/products?${queryString}`);
-            commit('setFetchingState', false)
-            if (response.success) {
-                commit('setproducts', response.data.data)
-            }
-        },
-
-
+    
         async createProduct({ dispatch }, payload) {
             return new Promise((resolve, reject) => {
-                api('post', `api/v1/admin/products`, payload.formData).then(res => {
-                    if (res.success) {
-                        dispatch('allProducts', payload.sellerId)
-                        resolve({ success: true, message: res.message });
+                console.log("Hello")
+                api('post', `api/products`, payload.formData).then(res => {
+                    if (res) {
+                        dispatch('allProducts', payload)
+                        resolve({ success: true, message: res.product_name });
                     } else {
-                        resolve({ success: false, message: res.message });
+                        resolve({ success: false, message: res });
                         reject('');
                     }
                 })
@@ -53,7 +46,7 @@ export default {
 
         async updateProduct({ dispatch }, payload) {
             return new Promise((resolve, reject) => {
-                api('post', `api/v1/admin/products/${payload.itemId}`, payload.formData)
+                api('post', `api/products/${payload.itemId}`, payload.formData)
                     .then(res => {
                         if (res.success) {
                             dispatch('allProducts', payload.sellerId)
@@ -67,29 +60,17 @@ export default {
         },
 
         async deleteProduct({ commit, dispatch }, data) {
+            console.log(data)
             commit('setFetchingState', true)
             return new Promise((resolve, reject) => {
-                api('post', `api/v1/admin/products/${data.id}`, data).then(res => {
-                    if (res.success) {
-                        dispatch('allProducts', data.sellerId)
+                api('delete', `api/products/${data.id}`, data).then(res => {console.log(data.id)
+                    if (res) {
+                        dispatch('allProducts', data)
                         commit('setFetchingState', false)
-                        resolve({ success: true, message: res.message });
+                        resolve({ success: true, message: res });
                     } else {
                         commit('setFetchingState', false)
-                        resolve({ success: false, message: res.message });
-                        reject('');
-                    }
-                })
-            })
-        },
-        async stockProduct({ commit},data) {
-            return new Promise((resolve, reject) => {
-                api('post', `api/v1/admin/products/${data.productId}/stocks`, data.formData).then(res => {
-                    if (res.success) {
-                        commit('', false)
-                        resolve({ success: true, message: res.message });
-                    } else {
-                        resolve({ success: false, message: res.message });
+                        resolve({ success: false, message: res });
                         reject('');
                     }
                 })

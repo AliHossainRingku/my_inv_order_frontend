@@ -17,22 +17,13 @@
             <th class="text-left">
               Product Name
             </th>
-            <th class="text-left">
-              Category
-            </th>
-            <th class="text-left">
-              Brand
-            </th>
-            <th class="text-left">
-              Thumbnail
-            </th>
             
             <th class="text-left">
               Price
             </th>
             
             <th class="text-left">
-              Vat (%)
+              Quantity
             </th>
             <th class="text-left">
               Action
@@ -45,45 +36,13 @@
             :key="i"
           >
             <td>{{ i + 1}}</td>
-            <td>{{ item.name }}</td>
-            <td>{{ item.category?item.category.name:'' }}</td>
-            <td>{{ item.brand?item.brand.name:''}}</td>
-            <td> 
-                <!-- {{item.images[0].path?item.images[0].path:'Not found'}} -->
-                <a 
-                    :href="`http://127.0.0.1:8000/storage/${item.thumbnail}`"
-                    target="_blank"
-                  >
-                    <img 
-                      :src="`http://127.0.0.1:8000/storage/${item.thumbnail}`" 
-                      alt="Not Uploaded" 
-                      height="60"
-                      width="60" 
-                      style="margin-top: 5px;"
-                    >
-                  </a>
-              </td>
-            <td>{{ item.price}}</td>
-            <td>{{ item.vat?item.vat+ ' %':'0 %'}}</td>
+            <td>{{ item.product_name }}</td>
+            <td>{{ item.product_price}}</td>
+            <td>{{ item.quantity}}</td>
 
 
             <td>
 
-              <v-tooltip top>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn
-                    v-bind="attrs"
-                    v-on="on"
-                    icon
-                    color="blue"
-                    @click="$emit('onStock', item.id)" 
-                    >
-                      <v-icon>mdi-playlist-plus</v-icon>
-                  </v-btn>
-                </template>
-                <span>Stock {{item.name}}</span>
-              </v-tooltip>
-              
               <v-tooltip top>
                 <template v-slot:activator="{ on, attrs }">            
                 <v-btn
@@ -105,7 +64,7 @@
                   v-bind="attrs"
                     v-on="on"
                     icon
-                    @click="($emit('onDeleteItem', item.id))"
+                    @click="($emit('onDeleteItem', item.product_id))"
                     color="error"
                   >
                     <v-icon>mdi-trash-can-outline</v-icon>

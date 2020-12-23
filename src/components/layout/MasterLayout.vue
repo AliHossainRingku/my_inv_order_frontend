@@ -16,7 +16,7 @@
                 text
                 @click="open=!open"
               >
-              {{ sellerInfo.name }}
+              USER NAME
               <v-icon>{{open==false ? 'mdi-menu-right' : 'mdi-menu-down'}}</v-icon>
                 
               </v-btn>
@@ -55,7 +55,6 @@
 </template>
 
 <script>
-  import {mapMutations} from 'vuex'
   import Sidebar from '@/components/atom/inventory/Sidebar'
   export default {
     name: 'MasterLayout',
@@ -69,24 +68,16 @@
     computed: {
       isHome(){
         return this.$route.fullPath == '/' ? true : false
-      },
-      sellerInfo() {
-        return this.$store.state.seller.sellerInfo
       }
     },
     methods: {
-      ...mapMutations([
-        'setSellerInfo'
-      ]),
+      
       logout(){
         localStorage.removeItem('im_token');
         localStorage.removeItem('user');
         localStorage.removeItem('seller_info');
         this.$router.push('/login');
       }
-    },
-    mounted() {
-      this.setSellerInfo()
     }
   }
 </script>
