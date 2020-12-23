@@ -64,7 +64,7 @@
                   v-bind="attrs"
                     v-on="on"
                     icon
-                    @click="($emit('onDeleteItem', item.product_id))"
+                    @click="($emit('onDeleteItem', item.id))"
                     color="error"
                   >
                     <v-icon>mdi-trash-can-outline</v-icon>

@@ -24,7 +24,8 @@ export default {
             
             commit('setFetchingState', false)
             if (response) {
-                commit('setproducts', response.data)
+                console.log(response)
+                commit('setproducts', response)
             }
         },
     
