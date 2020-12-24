@@ -45,6 +45,12 @@
               required
             ></v-text-field
           ></v-col>
+
+          <div v-for="(item,i) in products" :key="i">{{item.product_name}}</div>
+          <v-select>
+            <option>AA</option>
+            <option>AA</option>
+          </v-select>
           <v-col cols="4">
             <label for="">Unit Price <span class="red--text">*</span></label>
             <v-text-field
@@ -83,6 +89,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import { rules } from "@/data/rules.js";
 export default {
   name: "CreateOrder",
@@ -114,12 +121,16 @@ export default {
     },
     sellerId() {
       return this.$route.params.id;
+    },
+    products(){
+      return this.$store.state.product.products;
     }
   },
 
   watch: {},
   
   methods: {
+    ...mapActions(['allProducts']),
   
     
     // Form submission
@@ -164,6 +175,10 @@ export default {
     },
 
   },
+
+  mounted(){
+    this.allProducts()
+  }
   
 };
 </script>

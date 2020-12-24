@@ -83,7 +83,7 @@
                   <v-icon>mdi-pencil</v-icon>
                 </v-btn>
                 </template>
-                <span>Edit {{item.customer_id}}</span>
+                <span>Edit {{item.id}}</span>
               </v-tooltip>
             
               <v-tooltip top>

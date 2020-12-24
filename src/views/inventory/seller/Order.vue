@@ -192,6 +192,8 @@ export default {
   methods:{
     ...mapActions([
       "createOrder",
+      "editOrder",
+      "deleteOrder",
       "allOrders",
     ]),
     closeDialog() {
@@ -235,7 +237,7 @@ export default {
         id: this.deleteId,
         _method: "delete",
       };
-      let res = await this.deleteProduct(data);
+      let res = await this.deleteOrder(data);
       if (res.success) {
         this.snackBarConfig(true);
         this.text = res.message;
