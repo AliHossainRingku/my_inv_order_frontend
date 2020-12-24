@@ -22,7 +22,7 @@
 					>
 						<v-btn
 							text
-							@click="goToSeller"
+							@click="goToDashboard"
 						>
 							go to your account
 						</v-btn>
@@ -82,11 +82,11 @@ export default {
 			'setSellerInfo'
 		]),
 
-		goToSeller() {
+		goToDashboard() {
 			//let seller = this.sellers.filter(i => i.id == this.id)
 			//localStorage.setItem('seller_info', JSON.stringify(seller[0]));
 			//this.setSellerInfo();
-			this.$router.push('/user');
+			this.$router.push('/dashboard');
 		},
 
 		closeCrateDialog() {

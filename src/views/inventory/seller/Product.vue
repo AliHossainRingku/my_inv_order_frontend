@@ -12,7 +12,7 @@
       </v-btn>
     </div>
     
-    <div class="pa-5 mt-n10">
+    <div class="pa-5 mt-n5">
       <Table 
         :products="products" 
         @onDeleteItem="onDeleteItem"
@@ -163,7 +163,6 @@ export default {
   props: {},
   data() {
     return {
-      productIdStock : '',
       editItem: '',
       deleteId: '',
       deleteDialog:false,
@@ -184,23 +183,15 @@ export default {
     };
   },
   computed: {
-    sellerId() {
-     return this.$route.params.id;
-    },
+
     products() {
       return this.$store.state.product.products;
     },
-    sellers() {
-      return this.$store.state.seller.sellers;
-    },
-    seller() {
-      return this.$store.state.seller.seller;
-    },
+ 
   },
   watch: {},
   methods: {
     ...mapActions([
-      "singleSeller",
       "createProduct",
       "deleteProduct",
       "updateProduct",
@@ -298,7 +289,7 @@ export default {
       },
   },
    mounted() {
-    this.allProducts(this.sellerId);
+    this.allProducts();
     //this.singleSeller(this.sellerId);
   },
 };

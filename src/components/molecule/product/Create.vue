@@ -39,8 +39,9 @@
             required
           ></v-text-field>
         </v-col>
-
-        <v-col cols="12">
+      </v-row>
+      <v-row>
+        <v-col cols="12" class="mt-n9">
           <label for="">Description </label>
           <v-textarea
           v-model="product.product_description"
@@ -53,7 +54,7 @@
         ></v-col>
       </v-row>
 
-      <v-row class="mt-n3">
+      <v-row class="mt-n9">
         <v-col cols="12"
           ><label for="">Product Image</label>
           <v-file-input

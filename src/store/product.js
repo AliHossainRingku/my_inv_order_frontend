@@ -8,7 +8,7 @@ export default {
         // storeloader: false
     },
     mutations: {
-        setproducts(state, data) {
+        setProducts(state, data) {
             state.products = data;
         },
 
@@ -25,13 +25,13 @@ export default {
             commit('setFetchingState', false)
             if (response) {
                 console.log(response)
-                commit('setproducts', response)
+                commit('setProducts', response)
             }
         },
     
         async createProduct({ dispatch }, payload) {
             return new Promise((resolve, reject) => {
-                console.log("Hello")
+                //console.log("Hello")
                 api('post', `api/products`, payload.formData).then(res => {
                     if (res) {
                         dispatch('allProducts', payload)

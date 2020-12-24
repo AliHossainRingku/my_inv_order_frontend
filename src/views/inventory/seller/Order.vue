@@ -1,24 +1,27 @@
 <template>
   <div>
     <div class="pa-5 d-flex justify-space-between">
-
-      <h3>Orders (Seller: {{ sellerInfo.name }})</h3>  <!--      /* title of the page.*/-->
-      <v-btn
-          text
-          color="#4CAF"
-          @click="dialog = true"
-      >
+     <h3>Orders</h3>
+      <v-btn 
+      text 
+      outlined 
+      color="#4CAF" 
+      @click="dialog = true">
         <v-icon>mdi-plus</v-icon>
         Create
       </v-btn>
     </div>
-    <!-- end table component -->
 
-    <!-- create dialog -->
-    <v-dialog
-        v-model="dialog"
-        width="1050"
-    >
+    <div class="pa-5 mt-n10">
+      <Table
+        :orders="orders" 
+        @onDeleteItem="onDeleteItem"
+        @onEdit="onEdit"
+      />
+    </div>
+    
+    <!-- Create dialog starts -->
+    <v-dialog v-model="dialog" width="700">
       <v-card>
         <v-card-title class="headline ml-n3" style="background: #f2f2f2">
           Create Order
@@ -26,12 +29,7 @@
 
         <CreateForm 
         ref="createForm"
-        :orders="orders"
-        :categories="categories"
-        :brands="brands"
-        :stores="stores"
-        @changeCategory="changeCategoryGetBrand"
-        @onCreate="storeProduct"
+        @onCreate="storeOrder"
         >
           <template v-slot:closeBtn>
             <v-btn color="gray darken-1" text @click="closeDialog">
@@ -41,15 +39,17 @@
         </CreateForm>
       </v-card>
     </v-dialog>
-         <!-- edit dialog -->
+   <!-- Create dialog ends-->
+   
+   <!-- edit dialog starts -->
     <v-dialog 
       v-model="editDialog"
       width="700"
     >
       <v-card>
-        <v-card-title
-            class="headline ml-n3"
-            style="background: #f2f2f2"
+        <v-card-title 
+          class="headline ml-n3" 
+          style="background: #f2f2f2"
         >
           Edit Product
         </v-card-title>
@@ -57,10 +57,6 @@
         <EditForm
           ref="editForm"
           :item="editItem"
-          :categories="categories"
-          :brands="brands"
-          :stores="stores"
-          @changeCategory="changeCategoryGetBrand"
           @onUpdate="onUpdate"
         >
           <template v-slot:closeBtn>
@@ -75,9 +71,53 @@
         </EditForm>
       </v-card>
     </v-dialog>
-    <!-- end edit dialog -->
+    <!-- edit dialog ends-->
 
- 
+    <!-- Delete Dialog starts-->
+    <template>
+      <v-row justify="center">
+        <v-dialog
+          v-model="deleteDialog"
+          persistent
+          max-width="350"
+        >
+      
+          <v-card>
+            <v-card-title class="headline red--text ">
+              Are You Sure To Delete?
+            </v-card-title>
+            <v-card-text >If delete, all related data will be erased.</v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                color="green darken-1"
+                dark
+                outlined
+                small
+                @click="deleteDialog = false"
+              >
+                No
+              <v-icon small>mdi-close</v-icon>
+
+              </v-btn>
+              <v-btn
+                color="red darken-1"
+                dark
+                outlined
+                small
+                @click="onDelete"
+              >
+                Yes Delete
+              <v-icon small>mdi-check</v-icon>
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-row>
+    </template>
+    <!-- Delete dialog ends -->
+
+    <!-- snackbar for shwoing message of notification starts -->
     <v-snackbar 
       v-model="snackbar" 
       :color='snackbarColor'
@@ -101,157 +141,152 @@
       </v-icon>
       </template>
     </v-snackbar>
-
+     <!-- snackbar for shwoing message of notification ends-->
+    
   </div>
 </template>
 
 <script>
-import { mapActions } from "vuex";
 import CreateForm from "@/components/molecule/order/Create";
-import EditForm from "@/components/molecule/order/Edit";
-//import Table from "@/components/molecule/order/Table";
+//import EditForm from "@/components/molecule/order/Edit";
+import Table from "@/components/molecule/order/Table";
+import { mapActions } from 'vuex';
 
 export default {
   name: 'OrderPage',
   components: {
+    Table,
     CreateForm,
-    //Table,
-    EditForm
+    //EditForm
   },
   props: {},
   data() {
     return {
-      dialog: false,
       editItem: '',
-      snackbar: false,
+      deleteId: '',
+      deleteDialog:false,
       text: "",
-      editDialog:false
+      snackbar: false,
+      dialog: false,
+      editDialog:false,
+      stockDialog:false,
+      snackbarColor:"",
+      snackbarIcon:"",
+      snackbarButtonColor:"",
+        items: [
+        { title: 'Click Me' },
+        { title: 'Click Me' },
+        { title: 'Click Me' },
+        { title: 'Click Me 2' },
+      ],
     };
   },
   computed: {
-    sellerId() {
-     return this.$route.params.id;
-    },
-    allOrder(){
-      console.log(this.$store.state.order.orders)
+    orders() {
       return this.$store.state.order.orders;
-    },
-    brands() {
-      return this.$store.state.brand.categoryDebendentBrands;
-    },
-    stores() {
-      return this.$store.state.store.stores;
-    },
-    products() {
-      return this.$store.state.product.products;
-    },
-     sellers() {
-      return this.$store.state.seller.sellers;
-    },
-    sellerInfo() {
-      return this.$store.state.seller.seller;
     },
   },
 
   watch:{},
 
   methods:{
-
-    // mapping actions of order.js
     ...mapActions([
-      "singleSeller",
-      'getAllOrder',
-      'storeOrder',
-      'updateStatus',
-      'allProducts',
-      'allStore',
-      'addToCartStore',
-      'getFromCartStore'
+      "createOrder",
+      "allOrders",
     ]),
-
-    //orders are being stored here.
-    async addOrder(data) {
-       let res = await this.storeOrder(data);
-         this.dialog=false;
-       if (res.success) {
-         this.snackBarConfig(true);
-         this.text      = res.message;
-         this.closeCreateDialog();
-         this.$refs.createForm.loadingHandle(false);
-         } else {
-         this.snackBarConfig(false);
-         this.text      = res.message;
-         this.$refs.createForm.loadingHandle(false);
-       }
+    closeDialog() {
+      this.dialog = false;
+      this.$refs.createForm.resetValidation();
+      this.$refs.createForm.emptyForm();
     },
 
-     async changeCategoryGetBrand(data) {
-        await this.categoryDependentBrand(data);
-     },
-
-    async storeProduct(data) {
-      let res = await this.createProduct(data);
+    async storeOrder(data) {
+      let res = await this.createOrder(data);
       if (res.success) {
         this.snackBarConfig(true);
-        this.text     = res.message;
+        this.text = res.message;
+        this.closeDialog();
+        this.$refs.createForm.loadingHandle(false);
+      } else {
+        this.snackBarConfig(false);
+        this.text = res.message;
+        this.$refs.createForm.loadingHandle(false);
+      }
+    },
+    
+
+    async onUpdate(data) {
+      let res = await this.updateProduct(data);
+      if (res.success) {
+        this.snackBarConfig(true);
+        this.text = res.message;
         this.closeEditDialog();
-        // console.log("fdfdfdfdf");
         this.$refs.editForm.loadingHandle(false);
       } else {
-        this.snackbar = true;
+        this.snackBarConfig(false);
         this.text = res.message;
         this.$refs.editForm.loadingHandle(false);
       }
-      
     },
-    snackBarConfig(config){
-      this.snackbar = true;
-      if (config) {
-        this.snackbarIcon = "mdi-check-circle";
-        this.snackbarColor = "teal darken-2";
-        this.snackbarButtonColor="red";
-      }else{
-        this.snackbarIcon = "mdi-cancel"
-        this.snackbarColor = "red darken-4"
-        this.snackbarButtonColor="warning";
+    async onDelete() {
+      this.deleteDialog = false;
+      let data = {
+        sellerId:this.sellerId,
+        id: this.deleteId,
+        _method: "delete",
+      };
+      let res = await this.deleteProduct(data);
+      if (res.success) {
+        this.snackBarConfig(true);
+        this.text = res.message;
+      } else {
+        this.snackBarConfig(false);
+        this.text = res.message;
       }
+      this.deleteId = "";
     },
-
-    /*  edit action */
-    onEditClick(order){
-      console.log(order)
-      this.editItem   = order
-      this.editDialog = true;
-    },
-
-    /*  create dialog closing action */
-    closeDialog() {
-      this.dialog = false;
-      this.$refs.form.resetValidation();
-      this.$refs.form.emptyForm();
-    },
-
-    /*  edit dialog closing action */
-    closeEditDialog() {
-      this.editDialog = false;
-      this.$refs.form.reset()
-    },
+    onEdit(item){
+        this.editItem = Object.assign({}, item) ;
+        this.editDialog = true;
+        let data = {
+          sellerId:item.sellers[0].id,
+          categoryId:item.category.id
+        };
+        this.editItemCatName="";
+        this.editItemCatName = this.categoriesWithParent.filter(i => i.id == item.category.id)[0]?this.categoriesWithParent.filter(i => i.id == item.category.id)[0].name: '';
+        this.editItemCatName = this.categoriesWithParent.filter(i => i.id == item.category.id)[0]?this.categoriesWithParent.filter(i => i.id == item.category.id)[0].name: '';
+        this.categoryDependentBrand(data);
+      },
 
 
-    closeCrateDialog() {
-      this.dialog = false;
-      this.$refs.form.resetValidation();
-      this.$refs.form.emptyForm();
-    },
-
+      onDeleteItem(id){
+        this.deleteId = id ;
+        this.deleteDialog = true;
+      },
+      closeStockDialog() {
+        this.stockDialog = false;
+        this.$refs.stockForm.resetValidation();
+        this.$refs.stockForm.emptyForm();
+      },
+      closeEditDialog() {
+        this.editDialog = false;
+        this.$refs.editForm.emptyForm();
+      },
+      snackBarConfig(config){
+        this.snackbar = true;
+        if (config) {
+          this.snackbarIcon = "mdi-check-circle";
+          this.snackbarColor = "teal darken-2";
+          this.snackbarButtonColor="red";
+        }else{
+          this.snackbarIcon = "mdi-cancel"
+          this.snackbarColor = "red darken-4"
+          this.snackbarButtonColor="warning";
+        }
+      },
   },
-
-  mounted() {
-    this.getAllOrder(this.seller);
-    this.allStore(this.seller);
-    this.allProducts(this.seller);
-    this.singleSeller(this.seller);
-
+  mounted(){
+    this.allOrders();
   }
-}
+ }
 </script>

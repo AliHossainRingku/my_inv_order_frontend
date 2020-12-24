@@ -28,7 +28,7 @@ const routes = [
   {
     path: '/products',
     name: 'Product',
-    component: () => import('../views/inventory/Product.vue')
+    component: () => import('../views/inventory/seller/Product.vue')
   },
 
   {
@@ -63,7 +63,7 @@ router.beforeEach((to, from, next) => {
         next()
       }
       else {
-        next('Login');
+        next('login');
       }
       // EventBus.$emit('authLayout', true);
     }

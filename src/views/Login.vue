@@ -27,7 +27,7 @@
 								placeholder="example@mail.com"
 								required
 							></v-text-field>
-							<label for="">Passwrd</label>
+							<label for="">Password</label>
 							<v-text-field
 								v-model="credential.password"
 								:rules="passwordRules"

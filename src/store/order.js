@@ -2,58 +2,46 @@ import api from './api.js'
 
 export  default {
     state: {
+        nothing: '',
         orders              : [],
-        isFetchingOrders    : false,
-        isCacheEmpty        : true,
-        cartInfos           : []
+        isFetchingOrders    : false
     },
     mutations: {
         setOrders : (state, data) => {
             state.orders = data;
         },
-        setCacheIsEmpty : (state, data) => {
-            state.isCacheEmpty = data
-        },
         setFetchingState : (state, data) => {
             state.isFetchingOrders = data;
-        },
-        setCartInfos : (state, data) => {
-            state.cartInfos = data;
         }
     },
     actions: {
-
-        // storing placed order.
-        async storeOrder( { dispatch }, payload ){
-            console.log('Executor :: I am in storeOrder func');
-            return new Promise((resolve , reject) => {
-                api('post', 'api/v1/admin/orders', payload.formData).then(res => {
-                    if (res){
-
-                        console.log("Hello",res)
-                        localStorage.removeItem('myCart');
-                        dispatch('getFromCartStore', payload)
-                        dispatch('getAllOrder', payload)
-                        resolve({ success: true, message: res });
-                    }
-                    else {
-                        console.log(res.message)
-                        resolve({ success: false, message: res.message });
-                        reject('Order creating Failed!');
-                    }
-                });
-            });
-        },
-
         // retrieving order
-        async getAllOrder({ commit },sellerId){
+        async allOrders({ commit }){
             commit('setFetchingState', true)
-            let response = await api('get', `api/v1/admin/orders?seller_id=${sellerId}`);
+            let response = await api('get', `api/orders`);
+            //console.log(response)
             commit('setFetchingState', false)
-            if (response.success) {
-                commit('setOrders', response.data.data)
+            if (response) {
+                commit('setOrders', response)
             }
         },
+
+        async createOrder({ dispatch }, payload) {
+            return new Promise((resolve, reject) => {
+                
+                api('post', `api/orders`, payload.formData).then(res => {
+                    if (res) {
+                        console.log(res)
+                        dispatch('allOrders', payload)
+                        resolve({ success: true, message: res.customer_id });
+                    } else {
+                        resolve({ success: false, message: res });
+                        reject('');
+                    }
+                })
+            })
+        },
+        
 
         // update Order
         async updateStatus({ dispatch }, payload) {

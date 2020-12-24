@@ -181,11 +181,10 @@
 <script>
 import { mapActions } from "vuex";
 import { rules } from "@/data/rules.js";
-import SubCategory from "@/components/molecule/product/SubCategory";
 export default {
   name: "EditProduct",
   components: {
-    SubCategory
+    
   },
   props: {
     item: {
